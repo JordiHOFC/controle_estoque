@@ -1,38 +1,29 @@
-package br.com.controleestoque.ControleEstoque.entradas;
+package br.com.controleestoque.ControleEstoque.saidas;
 
 import br.com.controleestoque.ControleEstoque.produto.Produto;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity(name = "Entrada")
-public class EntradaProduto {
-
+@Entity(name = "Saida")
+public class SaidaProduto {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @ManyToOne
     @JoinColumn(nullable = false)
     private Produto produto;
-
-    @Column(nullable = false)
-    private LocalDateTime dataEntrada;
-
-    @Column(nullable = false)
-    private Double precoUnitario;
-
     @Column(nullable = false)
     private Integer quantidade;
+    @Column(nullable = false)
+    private LocalDateTime dataSaida;
 
-    public EntradaProduto(Produto produto, LocalDateTime dataEntrada, Double precoUnitario, Integer quantidade) {
+    public SaidaProduto(Produto produto, Integer quantidade, LocalDateTime dataSaida) {
         this.produto = produto;
-        this.dataEntrada = dataEntrada;
-        this.precoUnitario = precoUnitario;
         this.quantidade = quantidade;
+        this.dataSaida = dataSaida;
     }
 
-    public EntradaProduto() {
-
+    public SaidaProduto() {
     }
 
     public Long getId() {
