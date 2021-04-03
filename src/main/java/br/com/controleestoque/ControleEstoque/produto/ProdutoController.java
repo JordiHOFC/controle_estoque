@@ -1,6 +1,10 @@
 package br.com.controleestoque.ControleEstoque.produto;
 
+import br.com.controleestoque.ControleEstoque.entradas.EntradaProduto;
+import br.com.controleestoque.ControleEstoque.entradas.EntradaProdutoRequest;
+import br.com.controleestoque.ControleEstoque.entradas.EntradaProdutoResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.validation.Valid;
 import java.net.URI;
 
@@ -15,17 +21,24 @@ import java.net.URI;
 @RequestMapping("/produtos")
 public class ProdutoController {
 
-    private final ProdutoRepository repository;
+    @PersistenceContext
+    private EntityManager entityManager;
 
-    public ProdutoController(ProdutoRepository repository) {
-        this.repository = repository;
-    }
 
     @PostMapping
     public ResponseEntity<?>cadastrarProduto(@RequestBody @Valid ProdutoRequest produtoRequest, UriComponentsBuilder uriBuilder){
         Produto produto= produtoRequest.toModelo();
-        produto=repository.save(produto);
+        entityManager.persist(produto);
         URI uri=uriBuilder.path("/produtos/{id}").buildAndExpand(produto.getId()).toUri();
         return ResponseEntity.created(uri).body(new ProdutoResponse(produto));
     }
+    @PostMapping("/entradas")
+    @Transactional
+    public ResponseEntity<?> realizarEntrada(@RequestBody @Valid EntradaProdutoRequest entrada,UriComponentsBuilder uriBuilder){
+        EntradaProduto entradaProduto=entrada.toModelo();
+        entityManager.persist(entradaProduto);
+        URI uri=uriBuilder.path("/produtos/entradas/{id}").buildAndExpand(entradaProduto.getId()).toUri();
+        return ResponseEntity.created(uri).body(new EntradaProdutoResponse(entradaProduto));
+    }
+
 }
