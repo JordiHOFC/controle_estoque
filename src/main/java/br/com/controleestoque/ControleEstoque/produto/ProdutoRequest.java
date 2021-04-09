@@ -1,7 +1,6 @@
 package br.com.controleestoque.ControleEstoque.produto;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 
 public class ProdutoRequest {
     @NotBlank
@@ -9,8 +8,10 @@ public class ProdutoRequest {
     @NotBlank
     private String descricao;
     @NotNull
+    @PositiveOrZero
     private Integer quantidadeMinima;
     @NotNull
+    @Positive
     private Integer quantidadeMaxima;
 
     public ProdutoRequest(String nome, String descricao, Integer quantidadeMinima, Integer quantidadeMaxima) {
