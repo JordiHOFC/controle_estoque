@@ -8,15 +8,18 @@ import br.com.controleestoque.ControleEstoque.saidas.SaidaProduto;
 import br.com.controleestoque.ControleEstoque.saidas.SaidaProdutoRequest;
 import br.com.controleestoque.ControleEstoque.saidas.SaidaProdutoResponse;
 import br.com.controleestoque.ControleEstoque.validator.ExisteProduto;
+
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.persistence.EntityManager;
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -24,8 +27,10 @@ import java.util.Optional;
 public class ProdutoController {
 
     private final ProdutoRepository repository;
+    private final EntityManager manager;
 
-    public ProdutoController(ProdutoRepository repository) {
+    public ProdutoController(ProdutoRepository repository,EntityManager manager) {
+        this.manager=manager;
         this.repository = repository;
     }
 
@@ -45,8 +50,9 @@ public class ProdutoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         }
         EntradaProduto entradaProduto=entrada.toModelo(produto.get());
+        manager.persist(entradaProduto);
         produto.get().adicionarEntrada(entradaProduto);
-        URI uri=uriBuilder.path("/produtos/{id}/entradas/").buildAndExpand(produto.get().getId()).toUri();
+        URI uri=uriBuilder.path("/produtos/{id}/entradas/{idEntrada}").buildAndExpand(Map.of("id",produto.get().getId(),"idEntrada",entradaProduto.getId())).toUri();
         return ResponseEntity.created(uri).body(new EntradaProdutoResponse(entradaProduto));
     }
     @PostMapping("/{id}/saidas")
@@ -63,8 +69,9 @@ public class ProdutoController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
         SaidaProduto saidaProduto=saida.toModelo(produto.get());
+        manager.persist(saidaProduto);
         produto.get().adicionarSaida(saidaProduto);
-        URI uri=uriBuilder.path("/produtos/{id}/saidas").buildAndExpand(produto.get().getId()).toUri();
+        URI uri=uriBuilder.path("/produtos/{id}/saidas/{idSaida}").buildAndExpand(produto.get().getId(), saidaProduto.getId()).toUri();
         return ResponseEntity.created(uri).body(new SaidaProdutoResponse(saidaProduto));
     }
 

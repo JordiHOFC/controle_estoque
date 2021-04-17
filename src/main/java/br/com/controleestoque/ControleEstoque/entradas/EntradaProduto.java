@@ -35,6 +35,8 @@ public class EntradaProduto {
 
     }
 
+
+
     public Long getId() {
         return id;
     }
