@@ -29,6 +29,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.http.MediaType.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -55,10 +58,10 @@ class ProdutoControllerTest {
         String jsonResponse= mapper.writeValueAsString(response);
         URI uri = UriComponentsBuilder.fromUriString("http://localhost:8080/produtos").build().toUri();
         String location = UriComponentsBuilder.fromUriString("http://localhost:8080/produtos/1").build().toUriString();
-        mockMvc.perform(MockMvcRequestBuilders.post(uri).contentType(MediaType.APPLICATION_JSON).content(jsonRequest))
-                .andExpect(MockMvcResultMatchers.status().is(201))
-                .andExpect(MockMvcResultMatchers.header().string("location",location))
-                .andExpect(MockMvcResultMatchers.content().json(jsonResponse));
+        mockMvc.perform(post(uri).contentType(APPLICATION_JSON).content(jsonRequest))
+                .andExpect(status().is(201))
+                .andExpect(header().string("location",location))
+                .andExpect(content().json(jsonResponse));
 
 
     }
@@ -71,9 +74,9 @@ class ProdutoControllerTest {
         Erros error=new Erros("Produto", "Não existe cadastro deste produto");
         String jsonResponse = mapper.writeValueAsString(error);
         URI uri = UriComponentsBuilder.fromUriString("http://localhost:8080/produtos/").path("{id}/entradas").buildAndExpand(1L).toUri();
-        mockMvc.perform(MockMvcRequestBuilders.post(uri).contentType(MediaType.APPLICATION_JSON).content(jsonRequest))
-                .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.content().json(jsonResponse));
+        mockMvc.perform(post(uri).contentType(APPLICATION_JSON).content(jsonRequest))
+                .andExpect(status().isNotFound())
+                .andExpect(content().json(jsonResponse));
     }
     @Test
     @Transactional
@@ -88,10 +91,10 @@ class ProdutoControllerTest {
         EntradaProduto entradaProduto = request.toModelo(produto);
         EntradaProdutoResponse response=new EntradaProdutoResponse(entradaProduto);
         String jsonResponse= mapper.writeValueAsString(response);
-        mockMvc.perform(MockMvcRequestBuilders.post(uri).contentType(MediaType.APPLICATION_JSON).content(jsonRequest))
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.content().json(jsonResponse))
-                .andExpect(MockMvcResultMatchers.header().string("location",location));
+        mockMvc.perform(post(uri).contentType(APPLICATION_JSON).content(jsonRequest))
+                .andExpect(status().isCreated())
+                .andExpect(content().json(jsonResponse))
+                .andExpect(header().string("location",location));
     }
     @Test
     @Transactional
@@ -101,9 +104,9 @@ class ProdutoControllerTest {
         Erros error=new Erros("Produto", "Não existe cadastro deste produto");
         String jsonResponse = mapper.writeValueAsString(error);
         URI uri = UriComponentsBuilder.fromUriString("http://localhost:8080/produtos/").path("{id}/saidas").buildAndExpand(1L).toUri();
-        mockMvc.perform(MockMvcRequestBuilders.post(uri).contentType(MediaType.APPLICATION_JSON).content(jsonRequest))
-                .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.content().json(jsonResponse));
+        mockMvc.perform(post(uri).contentType(APPLICATION_JSON).content(jsonRequest))
+                .andExpect(status().isNotFound())
+                .andExpect(content().json(jsonResponse));
     }
     @Test
     @Transactional
@@ -119,10 +122,10 @@ class ProdutoControllerTest {
         SaidaProduto saidaProdutoo = request.toModelo(produto);
         SaidaProdutoResponse response=new SaidaProdutoResponse(saidaProdutoo);
         String jsonResponse= mapper.writeValueAsString(response);
-        mockMvc.perform(MockMvcRequestBuilders.post(uri).contentType(MediaType.APPLICATION_JSON).content(jsonRequest))
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.content().json(jsonResponse))
-                .andExpect(MockMvcResultMatchers.header().string("location",location));
+        mockMvc.perform(post(uri).contentType(APPLICATION_JSON).content(jsonRequest))
+                .andExpect(status().isCreated())
+                .andExpect(content().json(jsonResponse))
+                .andExpect(header().string("location",location));
 
     }
     @Test
@@ -137,9 +140,9 @@ class ProdutoControllerTest {
         Integer qtdDisponivel=repository.findByQuantidadeProduto(produto.getId());
         Erros response=new Erros("quantidade","Quantidade deve ser menor ou igual a "+qtdDisponivel);
         String jsonResponse= mapper.writeValueAsString(response);
-        mockMvc.perform(MockMvcRequestBuilders.post(uri).contentType(MediaType.APPLICATION_JSON).content(jsonRequest))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().json(jsonResponse));
+        mockMvc.perform(post(uri).contentType(APPLICATION_JSON).content(jsonRequest))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().json(jsonResponse));
 
     }
 
